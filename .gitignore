@@ -201,6 +201,13 @@ cython_debug/
 .cursorignore
 .cursorindexingignore
 
+# App
+backend/data/chroma/
+backend/data/uploads/
+backend/data/*.db
+frontend/node_modules/
+frontend/dist/
+
 # Marimo
 marimo/_static/
 marimo/_lsp/
