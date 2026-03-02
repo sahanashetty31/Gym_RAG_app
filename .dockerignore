@@ -1,0 +1,36 @@
+.env
+# Git
+.git
+.gitignore
+
+# Python
+.venv
+venv
+env
+__pycache__
+*.py[cod]
+*.egg-info
+.pytest_cache
+.ruff_cache
+
+# Node
+frontend/node_modules
+frontend/dist
+
+# Data (mount at runtime instead of baking in)
+backend/data/chroma
+backend/data/uploads
+backend/data/*.db
+
+# Env (use env_file in compose, not copy)
+.env
+.env.*
+
+# IDE / OS
+.cursorignore
+*.md
+!README.md
+
+# Scripts (not needed in image)
+run_backend.sh
+run_frontend.sh

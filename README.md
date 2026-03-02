@@ -106,11 +106,50 @@ npm run dev
 
 Open **http://localhost:5173**. Use the sidebar: **Dashboard**, **Log meals**, **Meal plans**, **Supplements**, **Recovery**, **Coach chat**.
 
+## Docker deployment
+
+Run the whole app with Docker Compose (backend + frontend, with persistent data).
+
+**Prerequisites:** Docker and Docker Compose installed.
+
+1. **Create `.env`** in the project root (for the backend API key):
+   ```env
+   GEMINI_API_KEY=your-gemini-api-key
+   ```
+
+2. **Build and start:**
+   ```bash
+   docker compose up -d --build
+   ```
+
+3. Open **http://localhost** (frontend; port 80). The frontend proxies `/api` to the backend.  
+   Backend only: **http://localhost:8000**.
+
+4. **Ingest the knowledge base** once: open the app → Dashboard → **Ingest documents**, or:
+   ```bash
+   curl -X POST http://localhost:8000/api/coach/ingest
+   ```
+
+**Compose overview:**
+- **backend** — FastAPI, SQLite, ChromaDB, Tesseract; data in volume `backend_data`.
+- **frontend** — Built React app served by nginx; `/api` proxied to the backend.
+
+**Useful commands:**
+```bash
+docker compose down          # stop
+docker compose up -d --build # rebuild and start
+docker compose logs -f       # follow logs
+```
+
 ## Project layout
 
 ```
 .env                    # API keys (project root)
 requirements.txt        # Python dependencies (project root)
+docker-compose.yml      # Backend + frontend services
+Dockerfile.backend      # FastAPI image
+Dockerfile.frontend     # React build + nginx image
+.dockerignore
 backend/
   app/
     api/                # Routes: nutrition (clients, meals, log-image), coach (chat, meal-plan, supplements, recovery, ingest)

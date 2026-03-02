@@ -1,0 +1,30 @@
+# Backend: FastAPI + RAG + OCR
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install system deps for Tesseract (optional OCR fallback)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    tesseract-ocr \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python dependencies (requirements at project root)
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Application code
+COPY backend/ ./backend/
+
+WORKDIR /app/backend
+
+# Keep a copy of sample docs so entrypoint can populate volume on first run
+RUN mkdir -p data data/uploads && \
+    cp -r data/docs data.docs.bak 2>/dev/null || true
+
+COPY backend/docker-entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+EXPOSE 8000
+
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["python", "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
