@@ -4,7 +4,7 @@ from pathlib import Path
 
 
 class Settings(BaseSettings):
-    app_name: str = "Nutrition & Recovery Coach"
+    app_name: str = "Flex Fitness"
     debug: bool = False
 
     # DB

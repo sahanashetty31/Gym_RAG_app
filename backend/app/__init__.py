@@ -1,1 +1,1 @@
-# Gym RAG - Nutrition & Recovery Coach
+# Flex Fitness - Nutrition & Recovery Coach

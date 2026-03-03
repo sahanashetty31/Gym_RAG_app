@@ -1,9 +1,14 @@
+# Flex Fitness — Docker Compose
+# Build: docker compose up -d --build
+# Open: http://localhost (frontend); API at http://localhost:8000
+
 services:
   backend:
     build:
       context: .
       dockerfile: Dockerfile.backend
-    container_name: gym-rag-backend
+    image: flex-fitness-backend:latest
+    container_name: flex-fitness-backend
     env_file: .env
     environment:
       - DATABASE_URL=sqlite+aiosqlite:///./data/coach.db
@@ -18,7 +23,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.frontend
-    container_name: gym-rag-frontend
+    image: flex-fitness-frontend:latest
+    container_name: flex-fitness-frontend
     depends_on:
       - backend
     ports:

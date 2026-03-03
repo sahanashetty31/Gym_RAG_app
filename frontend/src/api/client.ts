@@ -47,13 +47,32 @@ export async function getClient(id: number): Promise<ClientProfile> {
   return r.json();
 }
 
+async function apiError(r: Response, fallback: string): Promise<never> {
+  let msg = fallback;
+  try {
+    const body = await r.text();
+    if (body) {
+      try {
+        const j = JSON.parse(body) as { detail?: string | { msg?: string }[] };
+        if (typeof j.detail === "string") msg = j.detail;
+        else if (Array.isArray(j.detail) && j.detail[0]?.msg) msg = j.detail.map((d) => d.msg).join("; ");
+      } catch {
+        if (body.length <= 200) msg = body;
+        else msg = `${fallback}: ${body.slice(0, 150)}…`;
+      }
+    }
+  } catch {}
+  if (msg === fallback) msg = `${fallback} (${r.status}). If the request failed to reach the server, ensure the backend is running (e.g. ./run_backend.sh).`;
+  throw new Error(msg);
+}
+
 export async function logMeal(clientId: number, mealType: string, items: MealItem[]): Promise<MealLogEntry> {
   const r = await fetch(`${API}/nutrition/meals/log`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ client_id: clientId, meal_type: mealType, items }),
   });
-  if (!r.ok) throw new Error("Failed to log meal");
+  if (!r.ok) await apiError(r, "Failed to log meal");
   return r.json();
 }
 
@@ -63,7 +82,7 @@ export async function logMealImage(clientId: number, mealType: string, file: Fil
   form.append("meal_type", mealType);
   form.append("file", file);
   const r = await fetch(`${API}/nutrition/meals/log-image`, { method: "POST", body: form });
-  if (!r.ok) throw new Error("Failed to log meal from image");
+  if (!r.ok) await apiError(r, "Failed to log meal from image");
   return r.json();
 }
 

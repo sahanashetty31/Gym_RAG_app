@@ -47,3 +47,24 @@ a {
 a:hover {
   text-decoration: underline;
 }
+
+/* Mobile UX: touch targets, overflow, prevent zoom on inputs */
+@media (max-width: 768px) {
+  input, textarea, select, button {
+    font-size: max(16px, 1rem);
+  }
+
+  button, .layout-nav-link, a[role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+html {
+  overflow-x: hidden;
+}
+
+body {
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}

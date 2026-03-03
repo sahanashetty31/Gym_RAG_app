@@ -1,4 +1,4 @@
-# Backend: FastAPI + RAG + OCR
+# Flex Fitness — Backend: FastAPI + RAG + OCR
 FROM python:3.11-slim
 
 WORKDIR /app

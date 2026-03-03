@@ -1,4 +1,6 @@
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
+import "./Layout.css";
 
 const nav = [
   { to: "/", label: "Dashboard" },
@@ -11,38 +13,69 @@ const nav = [
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const loc = useLocation();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 768px)");
+    const handler = () => {
+      setIsMobile(mq.matches);
+      if (!mq.matches) setMenuOpen(false);
+    };
+    handler();
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
+
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [loc.pathname]);
+
   return (
-    <div style={{ display: "flex", minHeight: "100vh" }}>
-      <aside
-        style={{
-          width: 220,
-          background: "var(--surface)",
-          borderRight: "1px solid var(--border)",
-          padding: "1.5rem 0",
-        }}
+    <div className="layout">
+      <button
+        type="button"
+        className="layout-menu-toggle"
+        aria-label="Toggle menu"
+        onClick={() => setMenuOpen((o) => !o)}
       >
-        <div style={{ padding: "0 1rem 1rem", borderBottom: "1px solid var(--border)", marginBottom: "1rem" }}>
-          <h1 style={{ margin: 0, fontSize: "1.1rem", fontWeight: 600 }}>Nutrition & Recovery Coach</h1>
+        <span className="layout-menu-toggle-bar" />
+        <span className="layout-menu-toggle-bar" />
+        <span className="layout-menu-toggle-bar" />
+      </button>
+
+      {menuOpen && isMobile && (
+        <div
+          className="layout-backdrop"
+          onClick={() => setMenuOpen(false)}
+          onKeyDown={(e) => e.key === "Escape" && setMenuOpen(false)}
+          role="button"
+          tabIndex={0}
+          aria-label="Close menu"
+        />
+      )}
+
+      <aside
+        className={`layout-aside ${menuOpen && isMobile ? "layout-aside-open" : ""}`}
+      >
+        <div className="layout-brand">
+          <img src="/logo.png" alt="Flex Fitness" className="layout-logo" />
+          <h1 className="layout-title">FLEX FITNESS</h1>
         </div>
-        <nav>
+        <nav className="layout-nav">
           {nav.map(({ to, label }) => (
             <Link
               key={to}
               to={to}
-              style={{
-                display: "block",
-                padding: "0.6rem 1.25rem",
-                color: loc.pathname === to ? "var(--accent)" : "var(--textMuted)",
-                fontWeight: loc.pathname === to ? 600 : 400,
-                textDecoration: "none",
-              }}
+              className={`layout-nav-link ${loc.pathname === to ? "layout-nav-link-active" : ""}`}
             >
               {label}
             </Link>
           ))}
         </nav>
       </aside>
-      <main style={{ flex: 1, padding: "2rem", overflow: "auto" }}>
+
+      <main className="layout-main">
         {children}
       </main>
     </div>

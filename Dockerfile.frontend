@@ -1,4 +1,4 @@
-# Frontend: build React app then serve with nginx
+# Flex Fitness — Frontend: build React app then serve with nginx
 # Stage 1: build
 FROM node:18-alpine AS builder
 

@@ -104,22 +104,39 @@ function ManualLogForm({ clientId, onLogged }: { clientId: number; onLogged: () 
   const [mealType, setMealType] = useState("lunch");
   const [itemsText, setItemsText] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
     const lines = itemsText.split("\n").map((s) => s.trim()).filter(Boolean);
     const items: MealItem[] = lines.map((name) => ({ name }));
-    if (items.length === 0) return;
+    if (items.length === 0) {
+      setError("Enter at least one item (one per line).");
+      return;
+    }
     setSubmitting(true);
     logMeal(clientId, mealType, items)
-      .then(() => { setItemsText(""); onLogged(); })
-      .catch(console.error)
+      .then(() => {
+        setItemsText("");
+        setSuccess(true);
+        onLogged();
+        setTimeout(() => setSuccess(false), 3000);
+      })
+      .catch((err: Error) => setError(err.message || "Failed to log meal"))
       .finally(() => setSubmitting(false));
   };
 
   return (
     <div style={{ background: "var(--surface)", borderRadius: "var(--radius)", padding: "1.25rem", border: "1px solid var(--border)", minWidth: 280 }}>
       <h3 style={{ margin: "0 0 1rem", fontSize: "1rem" }}>Manual log</h3>
+      {error && (
+        <p style={{ margin: "0 0 0.75rem", fontSize: "0.85rem", color: "var(--danger)" }}>{error}</p>
+      )}
+      {success && (
+        <p style={{ margin: "0 0 0.75rem", fontSize: "0.85rem", color: "var(--accent)" }}>Meal logged.</p>
+      )}
       <form onSubmit={submit}>
         <label style={{ display: "block", marginBottom: "0.75rem" }}>
           <span style={{ fontSize: "0.85rem", color: "var(--textMuted)" }}>Meal type</span>
@@ -160,20 +177,39 @@ function OCRLogForm({ clientId, onLogged }: { clientId: number; onLogged: () => 
   const [mealType, setMealType] = useState("lunch");
   const [file, setFile] = useState<File | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
+  const [fileInputKey, setFileInputKey] = useState(0);
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!file) return;
+    setError(null);
+    if (!file) {
+      setError("Select an image first.");
+      return;
+    }
     setSubmitting(true);
     logMealImage(clientId, mealType, file)
-      .then(() => { setFile(null); onLogged(); })
-      .catch(console.error)
+      .then(() => {
+        setFile(null);
+        setFileInputKey((k) => k + 1);
+        setSuccess(true);
+        onLogged();
+        setTimeout(() => setSuccess(false), 3000);
+      })
+      .catch((err: Error) => setError(err.message || "Failed to scan & log meal"))
       .finally(() => setSubmitting(false));
   };
 
   return (
     <div style={{ background: "var(--surface)", borderRadius: "var(--radius)", padding: "1.25rem", border: "1px solid var(--border)", minWidth: 280 }}>
       <h3 style={{ margin: "0 0 1rem", fontSize: "1rem" }}>Scan meal (OCR)</h3>
+      {error && (
+        <p style={{ margin: "0 0 0.75rem", fontSize: "0.85rem", color: "var(--danger)" }}>{error}</p>
+      )}
+      {success && (
+        <p style={{ margin: "0 0 0.75rem", fontSize: "0.85rem", color: "var(--accent)" }}>Meal scanned and logged.</p>
+      )}
       <form onSubmit={submit}>
         <label style={{ display: "block", marginBottom: "0.75rem" }}>
           <span style={{ fontSize: "0.85rem", color: "var(--textMuted)" }}>Meal type</span>
@@ -191,9 +227,10 @@ function OCRLogForm({ clientId, onLogged }: { clientId: number; onLogged: () => 
         <label style={{ display: "block", marginBottom: "0.75rem" }}>
           <span style={{ fontSize: "0.85rem", color: "var(--textMuted)" }}>Photo of meal / receipt</span>
           <input
+            key={fileInputKey}
             type="file"
             accept="image/*"
-            onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+            onChange={(e) => { setFile(e.target.files?.[0] ?? null); setError(null); }}
             style={{ display: "block", marginTop: "0.25rem", color: "var(--text)" }}
           />
         </label>

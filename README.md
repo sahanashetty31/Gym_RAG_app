@@ -1,4 +1,4 @@
-# Gym RAG App — Nutrition & Recovery Coach
+# Flex Fitness — Nutrition & Recovery Coach
 
 A full-stack app that acts as a **Nutrition & Recovery Coach**: scan or log meals, then get meal plans, supplement ideas, and recovery protocols tailored to each client using RAG over your knowledge base and **Google Gemini**.
 
@@ -40,7 +40,7 @@ Both **`.env`** and **`requirements.txt`** live in the **project root** (not ins
 If you see `ModuleNotFoundError: No module named 'fastapi'`, activate the venv and install from the project root:
 
 ```bash
-cd /path/to/Gym_RAG_app
+cd /path/to/Flex_Fitness_app
 source .venv/bin/activate    # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 ```
@@ -108,7 +108,7 @@ Open **http://localhost:5173**. Use the sidebar: **Dashboard**, **Log meals**, *
 
 ## Docker deployment
 
-Run the whole app with Docker Compose (backend + frontend, with persistent data).
+Run **Flex Fitness** with Docker Compose (backend + frontend, with persistent data). Images are built as `flex-fitness-frontend:latest` and `flex-fitness-backend:latest`; containers run as `flex-fitness-frontend` and `flex-fitness-backend`.
 
 **Prerequisites:** Docker and Docker Compose installed.
 
@@ -131,8 +131,8 @@ Run the whole app with Docker Compose (backend + frontend, with persistent data)
    ```
 
 **Compose overview:**
-- **backend** — FastAPI, SQLite, ChromaDB, Tesseract; data in volume `backend_data`.
-- **frontend** — Built React app served by nginx; `/api` proxied to the backend.
+- **backend** (`flex-fitness-backend`) — FastAPI, SQLite, ChromaDB, Tesseract; data in volume `backend_data`.
+- **frontend** (`flex-fitness-frontend`) — Built React app (Flex Fitness UI + logo) served by nginx; `/api` proxied to the backend.
 
 **Useful commands:**
 ```bash
